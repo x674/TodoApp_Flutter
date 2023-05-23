@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'Screens/editScreen.dart';
+
 void main() {
   runApp(TodoApp());
 }
@@ -22,10 +24,12 @@ class _TodoAppState extends State<StatefulWidget> {
           title: Text("Список заметок"),
         ),
         // body: Column(children: NotesList),
-        body: ListView.separated(itemBuilder: (context, index) {
-          return Note(NotesList[index]);
-        }, separatorBuilder: (context, index) => Divider()
-            , itemCount: NotesList.length),
+        body: ListView.separated(
+            itemBuilder: (context, index) {
+              return Note(NotesList[index]);
+            },
+            separatorBuilder: (context, index) => Divider(),
+            itemCount: NotesList.length),
         // body: Center(child: Text('Нажми + чтобы добавить заметку!')),
         floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -40,7 +44,7 @@ class _TodoAppState extends State<StatefulWidget> {
 }
 
 void addNoteToList() {
-  NotesList.add("Заметка ${NotesList.length+1}");
+  NotesList.add("Заметка ${NotesList.length + 1}");
 }
 
 class Note extends StatelessWidget {
@@ -52,10 +56,18 @@ class Note extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(child: Text(text)),
-      height: 50,
-      decoration: BoxDecoration(color: Colors.black12),
+    return GestureDetector(
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(color: Colors.black12),
+        child: Center(child: Text(text)),
+      ),
+      onTap: () {Navigator.of(context).push(_createRoute(text));},
     );
+  }
+
+  Route _createRoute(String textNote) {
+    return PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) => EditScreen(textNote),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => child,);
   }
 }
