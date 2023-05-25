@@ -47,7 +47,7 @@ void addNoteToList() {
   NotesList.add("Заметка ${NotesList.length + 1}");
 }
 
-class Note extends StatelessWidget {
+class Note extends StatefulWidget {
   String text = "";
 
   Note(String s) {
@@ -55,19 +55,37 @@ class Note extends StatelessWidget {
   }
 
   @override
+  State<StatefulWidget> createState() {
+    return NoteState(text);
+  }
+
+}
+class NoteState extends State<StatefulWidget> {
+  String text = "";
+  NoteState(this.text);
+
+  @override
   Widget build(BuildContext context) {
+    Route _createRoute(String textNote) {
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            EditScreen(textNote),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        child,
+      );
+    }
     return GestureDetector(
       child: Container(
         height: 50,
         decoration: BoxDecoration(color: Colors.black12),
         child: Center(child: Text(text)),
       ),
-      onTap: () {Navigator.of(context).push(_createRoute(text));},
+      onTap: ()  async {
+        String textF = await Navigator.of(context).push(_createRoute(text));
+        setState(()  {
+          text = textF;
+        });
+      },
     );
-  }
-
-  Route _createRoute(String textNote) {
-    return PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) => EditScreen(textNote),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) => child,);
   }
 }
