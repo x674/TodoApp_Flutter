@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'Screens/editScreen.dart';
 
 void main() {
-  runApp(TodoApp());
+  runApp(const TodoApp());
 }
 
-List<String> NotesList = ["Заметка 1"];
+List<String> notesList = ["Заметка 1"];
 
 class TodoApp extends StatefulWidget {
+  const TodoApp({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _TodoAppState();
@@ -21,15 +23,15 @@ class _TodoAppState extends State<StatefulWidget> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Список заметок"),
+          title: const Text("Список заметок"),
         ),
         // body: Column(children: NotesList),
         body: ListView.separated(
             itemBuilder: (context, index) {
-              return Note(NotesList[index]);
+              return Note(notesList[index]);
             },
-            separatorBuilder: (context, index) => Divider(),
-            itemCount: NotesList.length),
+            separatorBuilder: (context, index) => const Divider(),
+            itemCount: notesList.length),
         // body: Center(child: Text('Нажми + чтобы добавить заметку!')),
         floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -44,29 +46,22 @@ class _TodoAppState extends State<StatefulWidget> {
 }
 
 void addNoteToList() {
-  NotesList.add("Заметка ${NotesList.length + 1}");
+  notesList.add("Заметка ${notesList.length + 1}");
 }
 
 class Note extends StatefulWidget {
-  String text = "";
-
-  Note(String s) {
-    text = s;
-  }
-
+  String noteText;
+  Note(this.noteText, {super.key});
   @override
-  State<StatefulWidget> createState() {
-    return NoteState(text);
-  }
-
+  State<StatefulWidget> createState() => NoteState();
 }
-class NoteState extends State<StatefulWidget> {
-  String text = "";
-  NoteState(this.text);
+
+class NoteState extends State<Note> {
+  
 
   @override
   Widget build(BuildContext context) {
-    Route _createRoute(String textNote) {
+    Route createRoute(String textNote) {
       return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
             EditScreen(textNote),
@@ -74,18 +69,20 @@ class NoteState extends State<StatefulWidget> {
         child,
       );
     }
+    void onTap() async {
+        String returnedText = await Navigator.of(context).push(createRoute(widget.noteText));
+        setState(()  {
+          widget.noteText = returnedText;
+        });
+  }
     return GestureDetector(
       child: Container(
         height: 50,
-        decoration: BoxDecoration(color: Colors.black12),
-        child: Center(child: Text(text)),
+        decoration: const BoxDecoration(color: Colors.black12),
+        child: Center(child: Text(widget.noteText)),
       ),
-      onTap: ()  async {
-        String textF = await Navigator.of(context).push(_createRoute(text));
-        setState(()  {
-          text = textF;
-        });
-      },
+      onTap: () => onTap()
+      ,
     );
   }
 }

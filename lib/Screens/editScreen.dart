@@ -1,31 +1,18 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
-String? _contentNote;
-String? _titleNote;
+String _contentNote = "";
+String _titleNote = "";
 
-class EditScreen extends StatefulWidget {
-  EditScreen(String textNote) {
+class EditScreen extends StatelessWidget {
+  EditScreen(String textNote, {super.key}) {
     _contentNote = textNote;
   }
 
   @override
-  State<StatefulWidget> createState() {
-    return _Layout();
-  }
-}
-
-class _Layout extends State<StatefulWidget> {
-  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       child: Scaffold(
-        appBar: AppBar(actions: [
-          BackButton(
-            onPressed: () => print("OUT MESSAGE"),
-          )
-        ]),
+        appBar: AppBar(),
         body: _EditBox(),
       ),
       onWillPop: () {
@@ -45,7 +32,7 @@ class _EditBox extends StatelessWidget {
           onChanged: (value) {
             _titleNote = value;
           },
-          decoration: InputDecoration(labelText: "Заголовок заметки:"),
+          decoration: const InputDecoration(labelText: "Заголовок заметки:"),
         ),
         Expanded(
             child: Row(
@@ -56,8 +43,9 @@ class _EditBox extends StatelessWidget {
               onChanged: (value) {
                 _contentNote = value;
               },
-              decoration: InputDecoration.collapsed(hintText: "Текст заметки"),
-              scrollPadding: EdgeInsets.all(20.0),
+              decoration:
+                  const InputDecoration.collapsed(hintText: "Текст заметки"),
+              scrollPadding: const EdgeInsets.all(20.0),
               maxLines: 99999,
               keyboardType: TextInputType.multiline,
             ))
