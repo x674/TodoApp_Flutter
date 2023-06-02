@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../Model/note_model.dart';
 
 class EditScreen extends StatelessWidget {
-  Note note;
+  final Note note;
 
-  EditScreen(this.note, {super.key});
+  const EditScreen(this.note, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +23,9 @@ class EditScreen extends StatelessWidget {
 }
 
 class EditBox extends StatelessWidget {
-  Note note;
+  final Note note;
 
-  EditBox(this.note, {super.key});
+  const EditBox(this.note, {super.key});
 
   @override
   Widget build(BuildContext context) {

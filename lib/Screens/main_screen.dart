@@ -17,8 +17,17 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   @override
+  void initState() {
+    readNotesFromFile().then((value) {
+      setState(() {
+        notesList = value;
+      });
+    });
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    () async{ notesList = await ReadNotesFromFile();}.call();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Список заметок"),
@@ -37,19 +46,18 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Future<void> onClickAddNewNote() async {var e = json.encode(notesList);
+  Future<void> onClickAddNewNote() async {
     var newNote = Note.empty();
-    notesList.add(newNote);
-    newNote = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditScreen(newNote),));
-    await SaveJsonNotesToFile(json.encode(notesList));
     setState(() {
-      //notesList.last = returnedText;
+      notesList.add(newNote);
     });
+    newNote = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditScreen(newNote),));
+    await saveJsonNotesToFile(json.encode(notesList));
   }
 }
 class NoteWidget extends StatefulWidget {
-  Note note;
-  NoteWidget(this.note, {Key? key}) : super(key: key);
+  final Note note;
+  const NoteWidget(this.note, {Key? key}) : super(key: key);
 
   @override
   State<NoteWidget> createState() => _NoteWidgetState();
@@ -64,17 +72,18 @@ class _NoteWidgetState extends State<NoteWidget> {
         decoration: const BoxDecoration(color: Colors.black12),
         child: Center(child: Text(widget.note.textNote)),
       ),
-      onTap: () => onTap()
+      onTap: () => onClickEditNote()
       ,
     );
   }
 
-  onTap() async {
+  onClickEditNote() async {
     Note returnedNote = await Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
         EditScreen(widget.note),));
     setState(()  {
       widget.note.titleNote = returnedNote.titleNote;
       widget.note.textNote = returnedNote.textNote;
     });
+    await saveJsonNotesToFile(json.encode(notesList));
   }
 }
