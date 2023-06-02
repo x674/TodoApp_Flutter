@@ -6,7 +6,7 @@ import 'package:todoapp_flutter/Model/note_model.dart';
 import '../Storage/file_storage.dart';
 import 'edit_screen.dart';
 
-List<Note> notesList = [Note("Заголовок","Текст заметки")];
+List<Note> notesList = [Note("Заголовок", "Текст заметки")];
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -25,20 +25,20 @@ class _MainScreenState extends State<MainScreen> {
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Список заметок"),
       ),
-      // body: Column(children: NotesList),
-      body: ListView.separated(
-          itemBuilder: (context, index) {
-            return NoteWidget(notesList[index]);
-          },
-          separatorBuilder: (context, index) => const Divider(),
-          itemCount: notesList.length),
+      body: GridView.builder(
+        gridDelegate:
+            SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 110,childAspectRatio: 0.9),
+        itemCount: notesList.length,
+        itemBuilder: (context, index) => NoteWidget(notesList[index]),
+      )
+      ,
       // body: Center(child: Text('Нажми + чтобы добавить заметку!')),
       floatingActionButton: FloatingActionButton(
           onPressed: () => onClickAddNewNote(),
@@ -51,12 +51,16 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       notesList.add(newNote);
     });
-    newNote = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditScreen(newNote),));
+    newNote = await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => EditScreen(newNote),
+    ));
     await saveJsonNotesToFile(json.encode(notesList));
   }
 }
+
 class NoteWidget extends StatefulWidget {
   final Note note;
+
   const NoteWidget(this.note, {Key? key}) : super(key: key);
 
   @override
@@ -67,20 +71,20 @@ class _NoteWidgetState extends State<NoteWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: Container(
-        height: 50,
-        decoration: const BoxDecoration(color: Colors.black12),
-        child: Center(child: Text(widget.note.textNote)),
+      child: Card(
+        child: Column(
+          children: [Text(widget.note.titleNote), Text(widget.note.textNote)],
+        ),
       ),
-      onTap: () => onClickEditNote()
-      ,
+      onTap: () => onClickEditNote(),
     );
   }
 
   onClickEditNote() async {
-    Note returnedNote = await Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-        EditScreen(widget.note),));
-    setState(()  {
+    Note returnedNote = await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => EditScreen(widget.note),
+    ));
+    setState(() {
       widget.note.titleNote = returnedNote.titleNote;
       widget.note.textNote = returnedNote.textNote;
     });
