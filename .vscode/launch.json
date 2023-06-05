@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "todoapp_flutter",
-            "request": "launch",
+            "request": "launch","program": "lib/todo_app.dart",
             "type": "dart"
         },
         {

@@ -14,8 +14,15 @@ Future<void> saveJsonNotesToFile(String jsonNotes) async {
 Future<List<Note>> readNotesFromFile() async {
   final directory = await getApplicationDocumentsDirectory();
   final file = File('${directory.path}${Platform.pathSeparator}notes.json');
-  final jsonNotes = await file.readAsString();
-  var map = json.decode(jsonNotes);
-  List<Note> notes = (map as List).map((e) => Note.fromJson(e)).toList();
+  var fileExist = await file.exists();
+  List<Note> notes;
+  if (fileExist) {
+    final jsonNotes = await file.readAsString();
+    var map = json.decode(jsonNotes);
+    notes = (map as List).map((e) => Note.fromJson(e)).toList();
+  } else {
+    return List<Note>.empty();
+  }
+
   return notes;
 }

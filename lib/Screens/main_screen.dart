@@ -29,16 +29,22 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Список заметок"),
-      ),
+      appBar: PreferredSize(
+        preferredSize: Size(10, 40),
+        child: SearchAnchor.bar(
+          suggestionsBuilder: (context, controller) => List.empty(),
+        ),
+      )
+      // AppBar(
+      //   title: const Text("Список заметок"),
+      // )
+      ,
       body: GridView.builder(
         gridDelegate:
-            SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 110,childAspectRatio: 0.9),
+            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemCount: notesList.length,
         itemBuilder: (context, index) => NoteWidget(notesList[index]),
-      )
-      ,
+      ),
       // body: Center(child: Text('Нажми + чтобы добавить заметку!')),
       floatingActionButton: FloatingActionButton(
           onPressed: () => onClickAddNewNote(),
@@ -73,7 +79,12 @@ class _NoteWidgetState extends State<NoteWidget> {
     return GestureDetector(
       child: Card(
         child: Column(
-          children: [Text(widget.note.titleNote), Text(widget.note.textNote)],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.note.titleNote,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(widget.note.textNote)
+          ],
         ),
       ),
       onTap: () => onClickEditNote(),
