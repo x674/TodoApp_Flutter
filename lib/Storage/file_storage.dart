@@ -21,7 +21,7 @@ Future<List<Note>> readNotesFromFile() async {
     var map = json.decode(jsonNotes);
     notes = (map as List).map((e) => Note.fromJson(e)).toList();
   } else {
-    return List<Note>.empty();
+    return [];
   }
 
   return notes;

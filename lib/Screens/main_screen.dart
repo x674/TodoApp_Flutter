@@ -29,37 +29,47 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size(10, 40),
-        child: SearchAnchor.bar(
-          suggestionsBuilder: (context, controller) => List.empty(),
-        ),
-      )
-      // AppBar(
-      //   title: const Text("Список заметок"),
-      // )
-      ,
-      body: GridView.builder(
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        itemCount: notesList.length,
-        itemBuilder: (context, index) => NoteWidget(notesList[index]),
-      ),
+      body: SafeArea(
+          child: Column(
+        children: [
+          SearchBar(),
+          // SearchAnchor.bar(
+          //   suggestionsBuilder: (context, controller) {
+          //
+          //     return List.empty();
+          //   },
+          // ),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2),
+              itemCount: notesList.length,
+              itemBuilder: (context, index) => NoteWidget(notesList[index]),
+            ),
+          ),
+        ],
+      )),
       // body: Center(child: Text('Нажми + чтобы добавить заметку!')),
       floatingActionButton: FloatingActionButton(
           onPressed: () => onClickAddNewNote(),
-          child: const Icon(Icons.add_circle)),
+          child: const Icon(Icons.create)),
     );
   }
 
   Future<void> onClickAddNewNote() async {
     var newNote = Note.empty();
-    setState(() {
-      notesList.add(newNote);
-    });
-    newNote = await Navigator.of(context).push(MaterialPageRoute(
+    notesList.add(newNote);
+    Navigator.of(context)
+        .push(MaterialPageRoute(
       builder: (context) => EditScreen(newNote),
-    ));
+    ))
+        .then(
+      (value) {
+        setState(() {
+          newNote = value;
+        });
+      },
+    );
     await saveJsonNotesToFile(json.encode(notesList));
   }
 }
@@ -85,7 +95,7 @@ class _NoteWidgetState extends State<NoteWidget> {
                 style: const TextStyle(fontWeight: FontWeight.bold)),
             Text(widget.note.textNote)
           ],
-        ),
+        ),color: Colors.white,borderOnForeground: false,shadowColor: Colors.yellow,surfaceTintColor: Colors.indigoAccent,
       ),
       onTap: () => onClickEditNote(),
     );
