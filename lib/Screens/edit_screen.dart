@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import '../Model/note_model.dart';
 
 class EditScreen extends StatelessWidget {
-  final Note note;
+  Note note = Note.empty();
 
-  const EditScreen(this.note, {super.key});
+//TODO back {super.key}
+  EditScreen([Note? note]) {
+    if (note != null) {
+      this.note = note;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

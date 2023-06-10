@@ -46,3 +46,9 @@ app.*.map.json
 # Generated
 generated_*
 Generated*
+
+#Layout inspector
+captures/
+*.li
+*.liv2
+*.li_meta.json

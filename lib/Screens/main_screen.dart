@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:todoapp_flutter/Model/note_model.dart';
 
 import '../Storage/file_storage.dart';
 import 'edit_screen.dart';
 
-List<Note> notesList = [Note("Заголовок", "Текст заметки")];
+List<Note> notesList = [];
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
+    //TODO Тормозит загрузка на секунду при запуске
     readNotesFromFile().then((value) {
       setState(() {
         notesList = value;
@@ -32,24 +35,21 @@ class _MainScreenState extends State<MainScreen> {
       body: SafeArea(
           child: Column(
         children: [
-          SearchBar(),
-          // SearchAnchor.bar(
-          //   suggestionsBuilder: (context, controller) {
-          //
-          //     return List.empty();
-          //   },
-          // ),
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2),
-              itemCount: notesList.length,
-              itemBuilder: (context, index) => NoteWidget(notesList[index]),
-            ),
+          SearchAnchor.bar(
+            suggestionsBuilder: (context, controller) {
+              return List.empty();
+            },
           ),
+          Expanded(
+              child: notesList.isEmpty
+                  ? const Center(child: Text('Нажми + чтобы добавить заметку!'))
+                  : MasonryGridView.count(
+                      crossAxisCount: 2,
+                      itemCount: notesList.length,
+                      itemBuilder: (context, index) => Dismissible(key: GlobalKey(), child: NoteWidget(notesList[index]),
+                          ))),
         ],
       )),
-      // body: Center(child: Text('Нажми + чтобы добавить заметку!')),
       floatingActionButton: FloatingActionButton(
           onPressed: () => onClickAddNewNote(),
           child: const Icon(Icons.create)),
@@ -57,20 +57,25 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> onClickAddNewNote() async {
-    var newNote = Note.empty();
-    notesList.add(newNote);
     Navigator.of(context)
         .push(MaterialPageRoute(
-      builder: (context) => EditScreen(newNote),
+      builder: (context) => EditScreen(),
     ))
         .then(
-      (value) {
-        setState(() {
-          newNote = value;
-        });
+      (newNote) {
+        if (newNote.textNote.isEmpty && newNote.titleNote.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Пустая заметка удалена"),
+            duration: Duration(seconds: 2),
+          ));
+        } else {
+          setState(() {
+            notesList.add(newNote);
+            saveJsonNotesToFile(json.encode(notesList));
+          });
+        }
       },
     );
-    await saveJsonNotesToFile(json.encode(notesList));
   }
 }
 
@@ -88,14 +93,35 @@ class _NoteWidgetState extends State<NoteWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Card(
+        elevation: 0,
+        clipBehavior: Clip.hardEdge,
+        shape: RoundedRectangleBorder(
+            side: BorderSide(color: Theme.of(context).colorScheme.outline),
+            borderRadius: const BorderRadius.all(Radius.circular(12))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.note.titleNote,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text(widget.note.textNote)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Text(widget.note.titleNote,
+                  style: const TextStyle(
+                      fontFamily: "Metropolis",
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      letterSpacing: 0.1)),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+              child: Text(
+                widget.note.textNote,
+                style: GoogleFonts.roboto(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0.2),
+              ),
+            )
           ],
-        ),color: Colors.white,borderOnForeground: false,shadowColor: Colors.yellow,surfaceTintColor: Colors.indigoAccent,
+        ),
       ),
       onTap: () => onClickEditNote(),
     );
