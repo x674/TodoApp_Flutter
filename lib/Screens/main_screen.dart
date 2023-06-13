@@ -29,24 +29,61 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
   }
 
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
+      drawer: NavigationDrawer(children: <Widget>[
+        ListTile(
+          leading: const Icon(Icons.notes),selected: true, selectedTileColor: Colors.cyan,
+          title: const Text('Заметки'),
+          onTap: () {},
+        ),
+        ListTile(
+          leading: const Icon(Icons.delete),
+          title: const Text('Корзина'),
+          onTap: () {},
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('Настройки'),
+          onTap: () {},
+        ),
+      ]),
       body: SafeArea(
           child: Column(
         children: [
-          SearchAnchor.bar(
-            suggestionsBuilder: (context, controller) {
-              return List.empty();
-            },
-          ),
+          Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: SearchAnchor.bar(
+                suggestionsBuilder: (context, controller) {
+                  return List.empty();
+                },
+                barLeading: IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {
+                    scaffoldKey.currentState!.openDrawer();
+                  },
+                ),
+                barHintText: "Искать в заметках",
+                barTrailing: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.refresh),
+                  )
+                ],
+              )),
           Expanded(
               child: notesList.isEmpty
                   ? const Center(child: Text('Нажми + чтобы добавить заметку!'))
                   : MasonryGridView.count(
                       crossAxisCount: 2,
                       itemCount: notesList.length,
-                      itemBuilder: (context, index) => Dismissible(key: GlobalKey(), child: NoteWidget(notesList[index]),
+                      itemBuilder: (context, index) => Dismissible(
+                            key: GlobalKey(),
+                            child: NoteWidget(notesList[index]),
                           ))),
         ],
       )),
