@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:todoapp_flutter/Model/note_model.dart';
 
 import '../Storage/file_storage.dart';
+import '../widgets/navigation_drawer.dart';
+import '../widgets/note_widget.dart';
 import 'edit_screen.dart';
 
 List<Note> notesList = [];
@@ -35,23 +36,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      drawer: NavigationDrawer(children: <Widget>[
-        ListTile(
-          leading: const Icon(Icons.notes),selected: true, selectedTileColor: Colors.cyan,
-          title: const Text('Заметки'),
-          onTap: () {},
-        ),
-        ListTile(
-          leading: const Icon(Icons.delete),
-          title: const Text('Корзина'),
-          onTap: () {},
-        ),
-        ListTile(
-          leading: const Icon(Icons.settings),
-          title: const Text('Настройки'),
-          onTap: () {},
-        ),
-      ]),
+      drawer: NavigationDrawerApp(),
       body: SafeArea(
           child: Column(
         children: [
@@ -83,7 +68,8 @@ class _MainScreenState extends State<MainScreen> {
                       itemCount: notesList.length,
                       itemBuilder: (context, index) => Dismissible(
                             key: GlobalKey(),
-                            child: NoteWidget(notesList[index]),
+                            child: NoteWidget(notesList[index],
+                                onPressed: () => onClickNote(notesList[index])),
                           ))),
         ],
       )),
@@ -114,63 +100,14 @@ class _MainScreenState extends State<MainScreen> {
       },
     );
   }
-}
 
-class NoteWidget extends StatefulWidget {
-  final Note note;
-
-  const NoteWidget(this.note, {Key? key}) : super(key: key);
-
-  @override
-  State<NoteWidget> createState() => _NoteWidgetState();
-}
-
-class _NoteWidgetState extends State<NoteWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Card(
-        elevation: 0,
-        clipBehavior: Clip.hardEdge,
-        shape: RoundedRectangleBorder(
-            side: BorderSide(color: Theme.of(context).colorScheme.outline),
-            borderRadius: const BorderRadius.all(Radius.circular(12))),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Text(widget.note.titleNote,
-                  style: const TextStyle(
-                      fontFamily: "Metropolis",
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                      letterSpacing: 0.1)),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-              child: Text(
-                widget.note.textNote,
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 0.2),
-              ),
-            )
-          ],
-        ),
-      ),
-      onTap: () => onClickEditNote(),
-    );
-  }
-
-  onClickEditNote() async {
+  onClickNote(Note note) async {
     Note returnedNote = await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => EditScreen(widget.note),
+      builder: (context) => EditScreen(note),
     ));
     setState(() {
-      widget.note.titleNote = returnedNote.titleNote;
-      widget.note.textNote = returnedNote.textNote;
+      note.titleNote = returnedNote.titleNote;
+      note.textNote = returnedNote.textNote;
     });
     await saveJsonNotesToFile(json.encode(notesList));
   }
