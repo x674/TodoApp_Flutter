@@ -17,7 +17,6 @@ class MainScreen extends StatefulWidget {
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
-
 class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
@@ -36,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      drawer: NavigationDrawerApp(),
+      drawer: navigationDrawer,
       body: SafeArea(
           child: Column(
         children: [

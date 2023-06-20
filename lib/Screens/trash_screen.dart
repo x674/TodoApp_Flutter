@@ -15,7 +15,7 @@ class TrashScreen extends StatelessWidget {
 //       AppBar(leading: IconButton(icon: Icon(Icons.menu),onPressed: () {
 // //        //Navigator.pop(context);
 //       },)),
-      drawer: NavigationDrawerApp(),
+      drawer: navigationDrawer,
       body: SafeArea(
           child: MasonryGridView.count(
             crossAxisCount: 3,itemCount: 30,
