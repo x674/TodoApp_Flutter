@@ -6,6 +6,7 @@ part 'note_model.g.dart';
 class Note{
   String titleNote = "";
   String textNote = "";
+  bool deleted = false;
 
   Note.empty();
   Note(this.titleNote, this.textNote);

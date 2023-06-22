@@ -42,7 +42,7 @@ class _NavigationDrawerAppState extends State<NavigationDrawerApp> {
         case 1:
           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => TrashScreen(),));
         case 2:
-          Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Scaffold(drawer: NavigationDrawerApp(),appBar: AppBar(),body: Center(child: Text("Settings screen"),)),));
+          Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Scaffold(drawer: NavigationDrawerApp(),appBar: AppBar(),body: Center(child: Text("Тут будут настройки :)"),)),));
       }
       setState(() {
         screenIndex = index;

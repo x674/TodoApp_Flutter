@@ -17,6 +17,7 @@ class MainScreen extends StatefulWidget {
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
+
 class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      drawer: NavigationDrawerApp(),//navigationDrawer,
+      drawer: NavigationDrawerApp(), //navigationDrawer,
       body: SafeArea(
           child: Column(
         children: [
@@ -66,10 +67,13 @@ class _MainScreenState extends State<MainScreen> {
                       crossAxisCount: 2,
                       itemCount: notesList.length,
                       itemBuilder: (context, index) => Dismissible(
-                            key: GlobalKey(),
-                            child: NoteWidget(notesList[index],
-                                onPressed: () => onClickNote(notesList[index])),
-                          ))),
+                          key: GlobalKey(),
+                          child: NoteWidget(notesList[index],
+                              onPressed: () => onClickNote(notesList[index])),
+                          onDismissed: (direction) => (direction) {
+                                notesList[index].deleted = true;
+                                saveJsonNotesToFile(json.encode(notesList));
+                              }))),
         ],
       )),
       floatingActionButton: FloatingActionButton(
