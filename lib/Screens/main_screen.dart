@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      drawer: navigationDrawer,
+      drawer: NavigationDrawerApp(),//navigationDrawer,
       body: SafeArea(
           child: Column(
         children: [

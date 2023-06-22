@@ -3,10 +3,10 @@ import 'package:todoapp_flutter/Screens/main_screen.dart';
 
 import '../Screens/trash_screen.dart';
 
-final navigationDrawer = NavigationDrawerApp();
-
+//final navigationDrawer = NavigationDrawerApp();
+int screenIndex = 0;
 class NavigationDrawerApp extends StatefulWidget {
-  int screenIndex = 0;
+
   NavigationDrawerApp({super.key});
 
   @override
@@ -18,7 +18,7 @@ class _NavigationDrawerAppState extends State<NavigationDrawerApp> {
   @override
   Widget build(BuildContext context) {
     return NavigationDrawer(
-        selectedIndex: widget.screenIndex,
+        selectedIndex: screenIndex,
         onDestinationSelected: handleScreenChanged,
         children: const <Widget>[
           NavigationDrawerDestination(
@@ -34,18 +34,18 @@ class _NavigationDrawerAppState extends State<NavigationDrawerApp> {
   }
   handleScreenChanged(int index) {
 
-    if(widget.screenIndex != index) {
+    if(screenIndex != index) {
       switch (index) {
         case 0:
-          Navigator.pop(context);
+          //Navigator.pop(context);
+          Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => const MainScreen(),));
         case 1:
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => TrashScreen(),));
+          Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => TrashScreen(),));
         case 2:
-          Navigator.push(context,MaterialPageRoute(builder: (context) => Scaffold(drawer: navigationDrawer,appBar: AppBar(),body: Center(child: Text("Settings screen"),)),));
+          Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Scaffold(drawer: NavigationDrawerApp(),appBar: AppBar(),body: Center(child: Text("Settings screen"),)),));
       }
       setState(() {
-        widget.screenIndex = index;
+        screenIndex = index;
       });
     }
   }

@@ -11,14 +11,11 @@ class TrashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
-          AppBar(),
-//       AppBar(leading: IconButton(icon: Icon(Icons.menu),onPressed: () {
-// //        //Navigator.pop(context);
-//       },)),
-      drawer: navigationDrawer,
+          AppBar(title: const Text("Корзина")),
+      drawer: NavigationDrawerApp(),//navigationDrawer,
       body: SafeArea(
           child: MasonryGridView.count(
-            crossAxisCount: 3,itemCount: 30,
+            crossAxisCount: 2,itemCount: 15,
             itemBuilder: (context, index) => NoteWidget(Note.empty()),
           )),
     );
