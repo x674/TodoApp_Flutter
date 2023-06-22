@@ -10,7 +10,7 @@ import '../widgets/note_widget.dart';
 import 'edit_screen.dart';
 
 List<Note> notesList = [];
-
+late final FocusNode _focusNode;
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -21,6 +21,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
+    _focusNode = FocusNode();
     //TODO Тормозит загрузка на секунду при запуске
     readNotesFromFile().then((value) {
       setState(() {
@@ -34,6 +35,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var visibleListNotes = notesList.where((element) => !element.deleted).toList();
     return Scaffold(
       key: scaffoldKey,
       drawer: NavigationDrawerApp(), //navigationDrawer,
@@ -44,7 +46,22 @@ class _MainScreenState extends State<MainScreen> {
               padding: const EdgeInsets.all(15.0),
               child: SearchAnchor.bar(
                 suggestionsBuilder: (context, controller) {
-                  return List.empty();
+                  var foundedNotes = visibleListNotes
+                      .where((element) =>
+                          element.titleNote
+                              .toLowerCase()
+                              .contains(controller.text) ||
+                          element.textNote
+                              .toLowerCase()
+                              .contains(controller.text))
+                      .toList();
+
+                  return foundedNotes.map((e) => NoteWidget(e,onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                      builder: (context) => EditScreen(e),
+                    ));
+                  },)).toList();
                 },
                 barLeading: IconButton(
                   icon: const Icon(Icons.menu),
@@ -61,19 +78,23 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               )),
           Expanded(
-              child: notesList.isEmpty
+              child: visibleListNotes.isEmpty
                   ? const Center(child: Text('Нажми + чтобы добавить заметку!'))
                   : MasonryGridView.count(
                       crossAxisCount: 2,
-                      itemCount: notesList.length,
+                      itemCount: visibleListNotes.length,
                       itemBuilder: (context, index) => Dismissible(
-                          key: GlobalKey(),
-                          child: NoteWidget(notesList[index],
-                              onPressed: () => onClickNote(notesList[index])),
-                          onDismissed: (direction) => (direction) {
-                                notesList[index].deleted = true;
-                                saveJsonNotesToFile(json.encode(notesList));
-                              }))),
+                            key: GlobalKey(),
+                            child: NoteWidget(visibleListNotes[index],
+                                onPressed: () =>
+                                    onClickNote(visibleListNotes[index])),
+                            onDismissed: (direction) {
+                              setState(() {
+                                visibleListNotes[index].deleted = true;
+                              });
+                              saveJsonNotesToFile(json.encode(notesList));
+                            },
+                          ))),
         ],
       )),
       floatingActionButton: FloatingActionButton(

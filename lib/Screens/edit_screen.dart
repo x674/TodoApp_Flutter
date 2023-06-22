@@ -61,6 +61,7 @@ class EditBox extends StatelessWidget {
                 hintText: "Заметка",
                 hintStyle: TextStyle(fontSize: 16, fontFamily: font_family)),
             maxLines: null,
+            autofocus: note.textNote.isEmpty,
             keyboardType: TextInputType.multiline,
           )
         ],
