@@ -12,7 +12,7 @@ class TodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const MainScreen(),theme: ThemeData(useMaterial3: true),
+      home: const MainScreen(),theme: ThemeData(useMaterial3: true),debugShowCheckedModeBanner: false,
     );
   }
 }

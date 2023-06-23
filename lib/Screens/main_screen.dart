@@ -10,7 +10,7 @@ import '../widgets/note_widget.dart';
 import 'edit_screen.dart';
 
 List<Note> notesList = [];
-late final FocusNode _focusNode;
+
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -21,7 +21,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
-    _focusNode = FocusNode();
     //TODO Тормозит загрузка на секунду при запуске
     readNotesFromFile().then((value) {
       setState(() {
@@ -35,10 +34,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var visibleListNotes = notesList.where((element) => !element.deleted).toList();
+    var visibleListNotes =
+        notesList.where((element) => !element.deleted).toList();
     return Scaffold(
       key: scaffoldKey,
-      drawer: NavigationDrawerApp(), //navigationDrawer,
+      drawer: NavigationDrawerApp(),
       body: SafeArea(
           child: Column(
         children: [
@@ -46,23 +46,47 @@ class _MainScreenState extends State<MainScreen> {
               padding: const EdgeInsets.all(15.0),
               child: SearchAnchor.bar(
                 suggestionsBuilder: (context, controller) {
-                  var foundedNotes = visibleListNotes
-                      .where((element) =>
-                          element.titleNote
-                              .toLowerCase()
-                              .contains(controller.text) ||
-                          element.textNote
-                              .toLowerCase()
-                              .contains(controller.text))
-                      .toList();
-
-                  return foundedNotes.map((e) => NoteWidget(e,onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                      builder: (context) => EditScreen(e),
-                    ));
-                  },)).toList();
+                  var foundedNotes = controller.value.text.isEmpty
+                      ? []
+                      : visibleListNotes
+                          .where((element) =>
+                              element.titleNote
+                                  .toLowerCase()
+                                  .contains(controller.text) ||
+                              element.textNote
+                                  .toLowerCase()
+                                  .contains(controller.text))
+                          .toList();
+                  if (foundedNotes.isNotEmpty) {
+                    return <Widget>[
+                      MasonryGridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: foundedNotes.length,
+                        itemBuilder: (context, index) => NoteWidget(
+                          foundedNotes[index],
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  EditScreen(foundedNotes[index]),
+                            ));
+                          },
+                        ),
+                      )
+                    ];
+                  } else {
+                    return List.empty();
+                  }
                 },
+                viewLeading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    //Hack: Request focus to new node
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  },
+                ),
                 barLeading: IconButton(
                   icon: const Icon(Icons.menu),
                   onPressed: () {
